@@ -1,0 +1,62 @@
+{
+  "format": 1,
+  "build_id": "sha256:c1b8de68c4a91d5367380600e76805f9efa7bbfc7a44ae999832d81a37520d56",
+  "ksor_version": "0.0.60",
+  "okf": {
+    "version": "0.2",
+    "commit": "ad30107c31c06aec8a7d5636e0d1058118604e6f",
+    "spec_sha256": "26aa5da029278939f914e578107242d9607d4f2dc5fe153272b82f9ed1030101"
+  },
+  "source_commit": "0b667d53635d6b3cf4a6d8078819d51b99924e3d",
+  "dirty": true,
+  "as_of": "2026-09-12T13:09:41.129Z",
+  "drafts": "hidden",
+  "instance_sha256": "783c3e99e753f3beadfe36a9fdb5dd12a2ecad7cbbfd221714820e469b471741",
+  "policy_sha256": "f019b3adc233c5fb56e51de62ff1e57dd0221e61d40710a1b4b158bdc494d99a",
+  "people_sha256": "01aabad83b86ad231cd931af8f82f21be9a86b020a9ad9a62a53ac9e8b8f833a",
+  "ledger_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "ledger_entries": [],
+  "audiences": {
+    "registry": [],
+    "viewers": {
+      "public": [
+        "public"
+      ]
+    }
+  },
+  "documents": [
+    {
+      "path": "agent-permissions.md",
+      "sha256": "886ef5c6cf8e7e2e091185215456cf7ec690657ee2871ad645b5b4dd92698541",
+      "status": "draft",
+      "audience": [
+        "public"
+      ],
+      "admitted": []
+    },
+    {
+      "path": "reorder-policy.md",
+      "sha256": "53e7cb56300fe167f3a731298c4c0f2ce6fbcae9f8b6b4223f76d89efa28af3f",
+      "status": "draft",
+      "audience": [
+        "public"
+      ],
+      "admitted": []
+    }
+  ],
+  "companions": [],
+  "assets": [],
+  "indexes": [
+    {
+      "path": "index.md",
+      "sha256": "6689d46a8d36a46cde220766f792c1cc5cfa4d21aa7aa902b17b03a7d5d0ec18"
+    }
+  ],
+  "bundles": [
+    {
+      "viewer": "public",
+      "sha256": "de1394baa13e36c17ccb60565f0a9c27f915494598fe767a23d5a6a48117b8a9",
+      "files": 1
+    }
+  ]
+}

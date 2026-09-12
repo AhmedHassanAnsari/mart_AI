@@ -1,0 +1,5 @@
+version: "0.1"
+approval_authorities:
+  - actors: [human:ahmedhassanansari, ksor-starter/0.0.60]
+takedown_authorities:
+  actors: [human:ahmedhassanansari]
