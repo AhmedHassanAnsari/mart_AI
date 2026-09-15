@@ -2,8 +2,14 @@
 type: Document
 title: "Reorder Policy"
 description: "Rules for determining reorder quantities, supplier selection, and sales velocity calculations."
-status: draft
+status: stable
+generated:
+  by: human:ahmedhassanansari
+  at: 2026-09-12T17:00:00Z
 ksor:
+  approval:
+    by: human:ahmedhassanansari
+    at: 2026-09-12T17:01:00Z
   audience: [public]
   owner: human:ahmedhassanansari
 ---

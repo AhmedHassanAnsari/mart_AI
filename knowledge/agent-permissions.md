@@ -2,8 +2,14 @@
 type: Document
 title: "Agent Permission & Blast-Radius Rules"
 description: "Defines the autonomous limits for agents and conditions requiring Mart Owner escalation."
-status: draft
+status: stable
+generated:
+  by: human:ahmedhassanansari
+  at: 2026-09-12T17:00:00Z
 ksor:
+  approval:
+    by: human:ahmedhassanansari
+    at: 2026-09-12T17:01:00Z
   audience: [public]
   owner: human:ahmedhassanansari
 ---
