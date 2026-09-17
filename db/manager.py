@@ -7,9 +7,15 @@ import re
 load_dotenv()
 
 class DBManager:
-    def __init__(self):
-        self.db_user = os.getenv("POSTGRES_USER")
-        self.db_password = os.getenv("POSTGRES_PASSWORD")
+    def __init__(self, read_only: bool = False):
+        self.db_user = os.getenv(
+            "CONTEXT_SERVICE_DB_USER" if read_only else "POSTGRES_USER",
+            os.getenv("POSTGRES_USER"),
+        )
+        self.db_password = os.getenv(
+            "CONTEXT_SERVICE_DB_PASSWORD" if read_only else "POSTGRES_PASSWORD",
+            os.getenv("POSTGRES_PASSWORD"),
+        )
         self.db_name = os.getenv("POSTGRES_DB")
         self.db_host = os.getenv("POSTGRES_HOST", "localhost")
         self.db_port = os.getenv("POSTGRES_PORT", "5432")
@@ -22,6 +28,9 @@ class DBManager:
             host=self.db_host,
             port=self.db_port
         )
+
+    def get_read_only_connection(self):
+        return DBManager(read_only=True).get_connection()
 
     def get_migration_files(self, directory):
         if not os.path.exists(directory):
@@ -43,15 +52,21 @@ class DBManager:
 
         files = self.get_migration_files(directory)
 
+        # Use explicit schema for migration_history to avoid ambiguity
+        history_table = sql.Identifier('migration_history')
+        if schema_name:
+            history_table = sql.SQL('{}.{}').format(sql.Identifier(schema_name), sql.Identifier('migration_history'))
+
         with conn.cursor() as cur:
-            cur.execute("""
-                CREATE TABLE IF NOT EXISTS migration_history (
+            cur.execute(sql.SQL("""
+                CREATE TABLE IF NOT EXISTS {} (
                     version INTEGER PRIMARY KEY,
                     applied_at TIMESTAMPTZ DEFAULT NOW(),
                     filename TEXT NOT NULL
                 );
-            """)
-            cur.execute("SELECT version FROM migration_history")
+            """).format(history_table))
+
+            cur.execute(sql.SQL("SELECT version FROM {}").format(history_table))
             applied_versions = [row[0] for row in cur.fetchall()]
 
         for filename in files:
@@ -68,7 +83,7 @@ class DBManager:
                     with conn.cursor() as cur:
                         cur.execute(sql_content)
                         cur.execute(
-                            "INSERT INTO migration_history (version, filename) VALUES (%s, %s)",
+                            sql.SQL("INSERT INTO {} (version, filename) VALUES (%s, %s)").format(history_table),
                             (version, filename)
                         )
                     print(f"Successfully applied {filename}")
@@ -94,7 +109,7 @@ class DBManager:
             # 3. Apply migrations to the new schema
             # We use a separate connection or transaction block for migrations to avoid
             # locking the whole session if one migration fails
-            self.apply_migrations(conn, "migrations/tenant", schema_name)
+            self.apply_migrations(conn, "db/migrations/tenant", schema_name)
 
             return tenant_id
         finally:
