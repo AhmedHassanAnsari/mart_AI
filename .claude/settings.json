@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "postgres": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["/mnt/c/Users/ahass/mart_AI/node_modules/mcp-postgres-server/build/index.js"],
+      "env": {
+        "PG_HOST": "localhost",
+        "PG_PORT": "5432",
+        "PG_USER": "postgres",
+        "PG_PASSWORD": "your_secure_password_here",
+        "PG_DATABASE": "mart_ai"
+      }
+    }
+  }
+}

@@ -1,0 +1,133 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: mart_ai_db
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  dapr_redis:
+    image: redis:6
+    container_name: dapr_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  dapr-placement:
+    image: daprio/dapr:1.18.4
+    container_name: dapr_placement
+    command: ["./daprd", "-mode", "placement"]
+    ports:
+      - "50005:50005"
+    healthcheck:
+      test: ["CMD", "./daprd", "--version"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  ingestion-api:
+    build:
+      context: .
+      dockerfile: api.Dockerfile
+    container_name: ingestion_api
+    ports:
+      - "8000:8000"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST=db
+    depends_on:
+      db:
+        condition: service_healthy
+
+  ingestion-api-dapr:
+    image: daprio/dapr:1.18.4
+    container_name: ingestion_api_dapr
+    command: ["./daprd", "-app-id", "ingestion-api", "-app-port", "8000", "-resources-path", "/components"]
+    volumes:
+      - ./dapr/components:/components
+    network_mode: "service:ingestion-api"
+    depends_on:
+      ingestion-api:
+        condition: service_started
+      dapr_redis:
+        condition: service_healthy
+
+  workflow-worker:
+    build:
+      context: .
+      dockerfile: worker.Dockerfile
+    container_name: workflow_worker
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST=db
+    depends_on:
+      db:
+        condition: service_healthy
+
+  workflow-worker-dapr:
+    image: daprio/dapr:1.18.4
+    container_name: workflow_worker_dapr
+    command: ["./daprd", "-app-id", "workflow-worker", "-resources-path", "/components", "-placement-host-address", "dapr-placement:50005"]
+    volumes:
+      - ./dapr/components:/components
+    network_mode: "service:workflow-worker"
+    depends_on:
+      workflow-worker:
+        condition: service_started
+      dapr_redis:
+        condition: service_healthy
+
+  bridge:
+    build:
+      context: .
+      dockerfile: worker.Dockerfile
+    container_name: bridge
+    command: ["python", "bridge/main.py"]
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGHRES_PORT=5432
+      - POSTGRES_HOST=db
+    depends_on:
+      db:
+        condition: service_healthy
+      dapr_redis:
+        condition: service_healthy
+
+  bridge-dapr:
+    image: daprio/dapr:1.18.4
+    container_name: bridge_dapr
+    command: ["./daprd", "-app-id", "bridge", "-app-port", "5000", "-resources-path", "/components"]
+    volumes:
+      - ./dapr/components:/components
+    network_mode: "service:bridge"
+    depends_on:
+      bridge:
+        condition: service_started
+      dapr_redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

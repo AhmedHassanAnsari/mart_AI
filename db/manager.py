@@ -17,7 +17,7 @@ class DBManager:
             os.getenv("POSTGRES_PASSWORD"),
         )
         self.db_name = os.getenv("POSTGRES_DB")
-        self.db_host = os.getenv("POSTGRES_HOST", "localhost")
+        self.db_host = os.getenv("POSTGRES_HOST")
         self.db_port = os.getenv("POSTGRES_PORT", "5432")
 
     def get_connection(self):

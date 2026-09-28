@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "skills": {
+    "dapr": {
+      "source": "membranedev/application-skills",
+      "sourceType": "github",
+      "skillPath": "skills/dapr/SKILL.md",
+      "computedHash": "8288e82f1aa0a25700d3dfcf687f384c0951299a402a993741b4fd43ba31ec96"
+    },
+    "fastapi": {
+      "source": "fastapi/fastapi",
+      "sourceType": "github",
+      "skillPath": "fastapi/.agents/skills/fastapi/SKILL.md",
+      "computedHash": "e85d9e223fbc3183b1a599bbe8b02d2edf275d046ff5bcfd14352c92cdff52b3"
+    },
+    "langfuse": {
+      "source": "langfuse/skills",
+      "sourceType": "github",
+      "skillPath": "skills/langfuse/SKILL.md",
+      "computedHash": "edf3a6ec935b6956629b94156a8fc310fcb0723eef849ff5ae9ad3dc1831d530"
+    },
+    "postgresql-optimization": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/postgresql-optimization/SKILL.md",
+      "computedHash": "8022448de70ba9a485e3b5bce34c5bbc644f93eb39b68431c9f7dabcf03aeb09"
+    }
+  }
+}
